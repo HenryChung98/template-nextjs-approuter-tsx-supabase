@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+button {
+  cursor: pointer;
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
