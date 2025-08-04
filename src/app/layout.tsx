@@ -21,10 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} antialiased`}
-      >
-      <ThemeToggle />
+      <body className={`${inter.variable} antialiased`}>
+        <ThemeToggle />
         {children}
       </body>
     </html>

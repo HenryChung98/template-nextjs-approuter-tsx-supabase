@@ -1,23 +1,18 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
 export interface Database {
   public: {
     Tables: {
-      users: {
+      auth_users: {
         Row: {
           id: string;
-          email: string;
-          first_name: string;
-          last_name: string;
-          role: string;
-          image: string;
+          email: string | null;
+          first_name: string | null;
+          last_name: string | null;
+          image: string | null;
+          email_confirmed_at: string | null;
           created_at: string;
+          last_sign_in_at: string | null;
         };
         Insert: {
           email: string;

@@ -5,21 +5,22 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 
-type UserProfile = Database["public"]["Tables"]["users"]["Row"];
+type AuthUser = Database["public"]["Tables"]["auth_users"]["Row"];
 
 export const useSupabase = () => {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const fetchingSession = useRef(false); // 중복 호출 방지
 
-  const mapToUserProfile = (data: any): UserProfile => ({
-    id: data.id,
-    email: data.email ?? "",
-    first_name: data.first_name ?? "",
-    last_name: data.last_name ?? "",
-    role: data.role ?? "",
-    image: data.image ?? "",
-    created_at: data.created_at ?? new Date().toISOString(),
+  const mapToUserProfile = (user: Session["user"]): AuthUser => ({
+    id: user.id,
+    email: user.email ?? "",
+    first_name: user.user_metadata?.first_name ?? "",
+    last_name: user.user_metadata?.last_name ?? "",
+    image: user.user_metadata?.image ?? "",
+    created_at: user.created_at,
+    last_sign_in_at: user.last_sign_in_at ?? "",
+    email_confirmed_at: user.email_confirmed_at ?? "",
   });
 
   const getSession = useCallback(async () => {
@@ -39,16 +40,6 @@ export const useSupabase = () => {
       }
 
       const { id, email, user_metadata } = session.user;
-      // const first_name =
-      //   typeof user_metadata?.first_name === "string"
-      //     ? user_metadata.first_name
-      //     : "";
-      // const last_name =
-      //   typeof user_metadata?.last_name === "string"
-      //     ? user_metadata.last_name
-      //     : "";
-      // const role =
-      //   typeof user_metadata?.role === "string" ? user_metadata.role : "";
 
       const { data: profile, error: profileError } = await supabase
         .from("users")
@@ -62,9 +53,10 @@ export const useSupabase = () => {
           email: email ?? "",
           first_name: user_metadata?.first_name ?? "",
           last_name: user_metadata?.last_name ?? "",
-          role: user_metadata?.role ?? "",
           image: user_metadata?.image ?? "",
           created_at: new Date().toISOString(),
+          last_sign_in_at: user_metadata?.last_sign_in_at ?? "",
+          email_confirmed_at: profile?.email_confirmed_at ?? "",
         });
       } else {
         setUser(mapToUserProfile(profile));
@@ -100,9 +92,10 @@ export const useSupabase = () => {
               email: email ?? "",
               first_name: user_metadata?.first_name ?? "",
               last_name: user_metadata?.last_name ?? "",
-              role: user_metadata?.role ?? "",
               image: user_metadata?.image ?? "",
               created_at: new Date().toISOString(),
+              last_sign_in_at: user_metadata?.last_sign_in_at ?? "",
+              email_confirmed_at: profile?.email_confirmed_at ?? "",
             });
           }
         }
